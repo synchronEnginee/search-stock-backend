@@ -1,10 +1,15 @@
 from flask import Flask, g, request
+from flask_cors import CORS
 import requests
 import re
 from bs4 import BeautifulSoup
 import json
 
 app = Flask(__name__)
+CORS(
+    app,
+    supports_credentials=True
+)
 
 @app.route('/stock', methods=['GET'])
 def get_stock():

@@ -27,9 +27,9 @@ def get_stock():
 
     return json.dumps(stocks_info, ensure_ascii=False, indent=2)
 
-@app.route('/', methods=['GET'])
-def get_fall_list():
-    vgm_url = 'https://minkabu.jp/financial_item_ranking/fall?exchange=tokyo.prime&order=asc'
+@app.route('/<page_num>', methods=['GET'])
+def get_fall_list(page_num):
+    vgm_url = 'https://minkabu.jp/financial_item_ranking/fall?exchange=tokyo.prime&order=asc&page=' + str(page_num)
     html_text = requests.get(vgm_url).text
     soup = BeautifulSoup(html_text, 'html.parser')
     # 一種類ごとに取得して辞書型の配列を作成

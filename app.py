@@ -39,7 +39,7 @@ def get_fall_list():
     stocks_fall = [re.sub('(\s|\r\n)', '', n.get_text()) for n in soup.select('tbody tr td.tar.cur.vamd')]
     stocks_target_price = [n.get_text() for n in soup.select('tbody tr td.num.vamd a > span')]
     stocks_info = []
-    for name, code, price, fall, target in zip(stocks_name, stocks_code, stocks_price, stocks_fall, stocks_target_price):
+    for name, code, price, fall, target in zip(stocks_name, stocks_code, stocks_price, stocks_fall, stocks_target_price[0::2]):
         stocks_info.append({"name": name, "code": code, "price": price, "stockFall": fall, "stockTargetPrice": target})
 
     return json.dumps(stocks_info, ensure_ascii=False, indent=2)

@@ -47,19 +47,31 @@ def get_fall_list(page_num):
 
     return json.dumps(stocks_info, ensure_ascii=False, indent=2)
 
-@app.route('/compare/<stock_code>', methods=['GET'])
-def get_compare_list(stock_code):
-    vgm_url = 'https://minkabu.jp/stock/' + str(stock_code) + '/chart'
-    html_text = requests.get(vgm_url).text
-    soup = BeautifulSoup(html_text, 'html.parser')
-    name = soup.select_one('p.md_stockBoard_stockName').text
-    stock_info = [n.get_text() for n in soup.select('td.num')]
-    per = float(re.sub('[^0-9\.]', '', stock_info[7]))
-    pbr = float(re.sub('[^0-9\.]', '', stock_info[8]))
-    dividendYield = float(re.sub('[^0-9\.]', '', stock_info[9]))
-    dividendPayoutRatio = float(re.sub('[^0-9\.]', '', stock_info[10]))
+def convert_float(value):
+    return float(re.sub('[^0-9\.]', '', value)) if len(re.sub('[^0-9\.]', '', value)) >= 1 else ''
 
-    return json.dumps({"name": name, "per": per, "pbr": pbr, "dividendYield": dividendYield, "dividendPayoutRatio": dividendPayoutRatio},
+@app.route('/compare', methods=['GET'])
+def get_compare_list():
+    stock_list = request.args.getlist('code')
+    response_list = []
+    for stock_code in stock_list:
+        vgm_url = 'https://minkabu.jp/stock/' + str(stock_code) + '/chart'
+        html_text = requests.get(vgm_url).text
+        soup = BeautifulSoup(html_text, 'html.parser')
+        name = soup.select_one('p.md_stockBoard_stockName').text
+        stock_info = [n.get_text() for n in soup.select('td.num')]
+        print(stock_code)
+        print(re.sub('[^0-9\.]', '', stock_info[7]))
+        print(re.sub('[^0-9\.]', '', stock_info[8]))
+        print(re.sub('[^0-9\.]', '', stock_info[9]))
+        print(re.sub('[^0-9\.]', '', stock_info[10]))
+        per = convert_float(stock_info[7])
+        pbr = convert_float(stock_info[8])
+        dividendYield = convert_float(stock_info[9])
+        dividendPayoutRatio = convert_float(stock_info[10])
+        response_list.append({"name": name, "per": per, "pbr": pbr, "dividendYield": dividendYield, "dividendPayoutRatio": dividendPayoutRatio})
+
+    return json.dumps(response_list,
      ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
